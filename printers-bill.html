@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Printer's Bill</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --paper: #EDE0C4;
+    --paper-dark: #DDCBA0;
+    --paper-darker: #CBB98A;
+    --ink: #221D16;
+    --ink-soft: #4A3F31;
+    --wood: #6B4423;
+    --wood-dark: #4A2E17;
+    --brass: #B08D57;
+    --brass-light: #D4B876;
+    --wax: #7A2E2E;
+    --wax-dark: #5C2222;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(255,255,255,0.15), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(0,0,0,0.06), transparent 60%);
+    color: var(--ink);
+    font-family: 'EB Garamond', Garamond, 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wood);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 56px;
+    margin: 0 0 6px;
+    letter-spacing: 0.01em;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 19px;
+  }
+
+  section {
+    margin-bottom: 44px;
+  }
+
+  .panel {
+    background: var(--paper-dark);
+    border: 1px solid var(--paper-darker);
+    border-radius: 3px;
+    padding: 28px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset, 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wood-dark);
+    margin-bottom: 10px;
+  }
+
+  .sample-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .sample-label {
+    display: inline;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--ink-soft);
+    margin-bottom: 0;
+  }
+  #sample-select {
+    padding: 6px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--paper);
+    border: 1px solid var(--paper-darker);
+    border-radius: 2px;
+    color: var(--ink);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 16px;
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--paper-darker);
+    border-radius: 2px;
+    resize: vertical;
+  }
+  textarea:focus-visible {
+    outline: 2px solid var(--wood);
+    outline-offset: 2px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .shop-settings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--paper-darker);
+  }
+
+  .setting label {
+    margin-bottom: 6px;
+  }
+
+  .setting .hint {
+    display: block;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  .setting input {
+    width: 100%;
+    padding: 8px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    background: var(--paper);
+    border: 1px solid var(--paper-darker);
+    border-radius: 2px;
+    color: var(--ink);
+  }
+  .setting input:focus-visible {
+    outline: 2px solid var(--wood);
+    outline-offset: 1px;
+  }
+
+  .inventory-readout {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: var(--paper);
+    border: 1px solid var(--paper-darker);
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .inventory-readout strong {
+    color: var(--wax);
+    font-size: 16px;
+  }
+
+  button.cast-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    background: var(--wax);
+    border: none;
+    border-radius: 2px;
+    padding: 13px 30px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 var(--wax-dark);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  button.cast-btn:hover { background: #8A3636; }
+  button.cast-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 var(--wax-dark);
+  }
+  button.cast-btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+  .case-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--wood-dark);
+    margin: 28px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--paper-darker);
+  }
+  section h2 + .case-heading {
+    margin-top: 4px;
+  }
+  .section-note {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin: 0 0 20px;
+  }
+
+  /* --- The Type Case (signature visualization) --- */
+  .case {
+    background: var(--wood);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 40%);
+    border: 8px solid var(--wood-dark);
+    border-radius: 3px;
+    padding: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25) inset, 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .compartment {
+    background: var(--paper);
+    border: 2px solid var(--wood-dark);
+    border-radius: 1px;
+    padding: 6px 8px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+    flex: 0 0 auto;
+  }
+
+  .compartment .letter-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+  }
+
+  .compartment .count-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--wax);
+    margin-bottom: 5px;
+  }
+
+  .compartment .tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-content: flex-start;
+    justify-content: center;
+  }
+
+  .sort-tile {
+    width: 9px;
+    height: 12px;
+    background: linear-gradient(180deg, #7d7d7d, #4d4d4d);
+    border-radius: 1px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset;
+  }
+
+  .compartment.baseline {
+    opacity: 0.68;
+  }
+  .compartment.baseline .letter-label,
+  .compartment.baseline .count-label {
+    color: var(--ink-soft);
+  }
+
+  .min-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-style: italic;
+    font-size: 9px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  /* --- The Bill (ledger table) --- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    background: var(--paper-dark);
+  }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wood-dark);
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--wood);
+  }
+  thead th.num { text-align: right; }
+  tbody td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--paper-darker);
+  }
+  tbody td.num { text-align: right; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.25); }
+  tbody tr.baseline-row { color: var(--ink-soft); font-style: italic; }
+  .min-flag {
+    font-style: italic;
+    font-size: 11px;
+    color: var(--wood);
+  }
+  tbody tr.total-row td {
+    border-top: 2px solid var(--wood);
+    border-bottom: none;
+    font-weight: 600;
+    padding-top: 12px;
+  }
+
+  .bar-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--paper-darker);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--wood);
+    border-radius: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  footer {
+    margin-top: 56px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 40px; }
+    .wrap { padding: 36px 16px 60px; }
+    .panel { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Venice, 1490 — or your own desk, today</div>
+    <h1>The Printer's Bill</h1>
+    <p class="subtitle">Decide how many of each letter a font would need to set your text</p>
+  </header>
+
+  <section class="panel">
+    <label for="text-input">Paste or type a passage</label>
+    <div class="sample-picker">
+      <label for="sample-select" class="sample-label">Or load a longer sample:</label>
+      <select id="sample-select">
+        <option value="">— choose one —</option>
+        <option value="constitution">The U.S. Constitution (Preamble &amp; Articles I–VII)</option>
+        <option value="lear">King Lear, Act 1 Scene 1 (original First Folio spelling)</option>
+        <option value="alice">Alice's Adventures in Wonderland, Ch. 1</option>
+      </select>
+    </div>
+    <textarea id="text-input">Marietta had been sorting type since before dawn, and her fingers already knew what her eyes were too tired to check.</textarea>
+
+    <div class="shop-settings">
+      <div class="setting">
+        <label for="sheets-per-day">
+          Sheets set &amp; printed per day
+          <span class="hint">a quarto sheet = 4 pages/forme &times; 2 formes/sheet = 8 pages</span>
+        </label>
+        <input type="number" id="sheets-per-day" value="1" min="0.1" max="50" step="0.1">
+      </div>
+      <div class="setting">
+        <label for="chars-per-page">Characters per page</label>
+        <input type="number" id="chars-per-page" value="1700" min="200" max="6000" step="50">
+      </div>
+      <div class="setting">
+        <label for="lag-days">Normal distribution lag (days)</label>
+        <input type="number" id="lag-days" value="1" min="0" max="14" step="0.5">
+      </div>
+      <div class="setting">
+        <label for="buffer-days">
+          Buffer for bad days
+          <span class="hint">what if your best distributor gets sick?</span>
+        </label>
+        <input type="number" id="buffer-days" value="0" min="0" max="30" step="0.5">
+      </div>
+      <div class="setting">
+        <label for="point-size">
+          Point size (body size)
+          <span class="hint">bigger type, heavier pieces</span>
+        </label>
+        <input type="number" id="point-size" value="12" min="4" max="72" step="1">
+      </div>
+    </div>
+
+    <div class="inventory-readout" id="inventory-readout">
+      <div><span id="pages-per-day-readout">—</span> pages of type composed per day</div>
+      Working inventory needed: <strong id="inventory-total">—</strong> pieces of type
+      <div>That's roughly <strong id="weight-total">—</strong> of lead-tin-antimony type metal</div>
+    </div>
+
+    <div class="controls">
+      <button class="cast-btn" id="cast-btn">Cast the Bill</button>
+    </div>
+  </section>
+
+  <section id="case-section" style="display:none;">
+    <h2>The Two Cases</h2>
+    <p class="section-note">A capital letter and its lowercase twin are different pieces of type, cast separately and stored separately — exactly the arrangement Chapter Six describes. Each compartment sized by how often that letter is needed within its own case.</p>
+
+    <h3 class="case-heading">Upper Case — Capitals</h3>
+    <p class="section-note" id="scale-note-upper"></p>
+    <div class="case" id="case-grid-upper"></div>
+
+    <h3 class="case-heading">Lower Case — Ordinary Letters</h3>
+    <p class="section-note" id="scale-note-lower"></p>
+    <div class="case" id="case-grid-lower"></div>
+  </section>
+
+  <section id="bill-section" style="display:none;">
+    <h2>The Bill</h2>
+    <p class="section-note">A founder's recipe: exactly how many of each letter to cast, so the shop never runs dry mid-page.</p>
+
+    <h3 class="case-heading">Upper Case — Capitals</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Letter</th>
+          <th class="num">Count</th>
+          <th>Share of text</th>
+          <th class="num">Cast</th>
+        </tr>
+      </thead>
+      <tbody id="bill-body-upper"></tbody>
+    </table>
+
+    <h3 class="case-heading">Lower Case — Ordinary Letters</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Letter</th>
+          <th class="num">Count</th>
+          <th>Share of text</th>
+          <th class="num">Cast</th>
+        </tr>
+      </thead>
+      <tbody id="bill-body-lower"></tbody>
+    </table>
+  </section>
+
+  <footer>Every letter cast here follows the same arithmetic Chapter Five describes.</footer>
+</div>
+
+<script>
+(function () {
+  const textInput = document.getElementById('text-input');
+  const sheetsPerDayInput = document.getElementById('sheets-per-day');
+  const charsPerPageInput = document.getElementById('chars-per-page');
+  const lagDaysInput = document.getElementById('lag-days');
+  const bufferDaysInput = document.getElementById('buffer-days');
+  const pointSizeInput = document.getElementById('point-size');
+  const pagesPerDayReadoutEl = document.getElementById('pages-per-day-readout');
+  const inventoryTotalEl = document.getElementById('inventory-total');
+  const weightTotalEl = document.getElementById('weight-total');
+  const castBtn = document.getElementById('cast-btn');
+  const caseSection = document.getElementById('case-section');
+  const billSection = document.getElementById('bill-section');
+  const caseGridUpper = document.getElementById('case-grid-upper');
+  const caseGridLower = document.getElementById('case-grid-lower');
+  const billBodyUpper = document.getElementById('bill-body-upper');
+  const billBodyLower = document.getElementById('bill-body-lower');
+
+  const SAMPLE_TEXTS = {
+    constitution: "We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.\n\nArticle I\n\nSection 1: Congress\n\nAll legislative Powers herein granted shall be vested in a Congress of the United States, which shall consist of a Senate and House of Representatives.\n\nSection 2: The House of Representatives\n\nThe House of Representatives shall be composed of Members chosen every second Year by the People of the several States, and the Electors in each State shall have the Qualifications requisite for Electors of the most numerous Branch of the State Legislature.\n\nNo Person shall be a Representative who shall not have attained to the Age of twenty five Years, and been seven Years a Citizen of the United States, and who shall not, when elected, be an Inhabitant of that State in which he shall be chosen.\n\nRepresentatives and direct Taxes shall be apportioned among the several States which may be included within this Union, according to their respective Numbers, which shall be determined by adding to the whole Number of free Persons, including those bound to Service for a Term of Years, and excluding Indians not taxed, three fifths of all other Persons. The actual Enumeration shall be made within three Years after the first Meeting of the Congress of the United States, and within every subsequent Term of ten Years, in such Manner as they shall by Law direct. The Number of Representatives shall not exceed one for every thirty Thousand, but each State shall have at Least one Representative; and until such enumeration shall be made, the State of New Hampshire shall be entitled to chuse three, Massachusetts eight, Rhode-Island and Providence Plantations one, Connecticut five, New-York six, New Jersey four, Pennsylvania eight, Delaware one, Maryland six, Virginia ten, North Carolina five, South Carolina five, and Georgia three.\n\nWhen vacancies happen in the Representation from any State, the Executive Authority thereof shall issue Writs of Election to fill such Vacancies.\n\nThe House of Representatives shall chuse their Speaker and other Officers; and shall have the sole Power of Impeachment.\n\nSection 3: The Senate\n\nThe Senate of the United States shall be composed of two Senators from each State, chosen by the Legislature thereof, for six Years; and each Senator shall have one Vote.\n\nImmediately after they shall be assembled in Consequence of the first Election, they shall be divided as equally as may be into three Classes. The Seats of the Senators of the first Class shall be vacated at the Expiration of the second Year, of the second Class at the Expiration of the fourth Year, and of the third Class at the Expiration of the sixth Year, so that one third may be chosen every second Year; and if Vacancies happen by Resignation, or otherwise, during the Recess of the Legislature of any State, the Executive thereof may make temporary Appointments until the next Meeting of the Legislature, which shall then fill such Vacancies.\n\nNo Person shall be a Senator who shall not have attained to the Age of thirty Years, and been nine Years a Citizen of the United States, and who shall not, when elected, be an Inhabitant of that State for which he shall be chosen.\n\nThe Vice President of the United States shall be President of the Senate, but shall have no Vote, unless they be equally divided.\n\nThe Senate shall chuse their other Officers, and also a President pro tempore, in the Absence of the Vice President, or when he shall exercise the Office of President of the United States.\n\nThe Senate shall have the sole Power to try all Impeachments. When sitting for that Purpose, they shall be on Oath or Affirmation. When the President of the United States is tried, the Chief Justice shall preside: And no Person shall be convicted without the Concurrence of two thirds of the Members present.\n\nJudgment in Cases of Impeachment shall not extend further than to removal from Office, and disqualification to hold and enjoy any Office of honor, Trust or Profit under the United States: but the Party convicted shall nevertheless be liable and subject to Indictment, Trial, Judgment and Punishment, according to Law.\n\nSection 4: Elections\n\nThe Times, Places and Manner of holding Elections for Senators and Representatives, shall be prescribed in each State by the Legislature thereof; but the Congress may at any time by Law make or alter such Regulations, except as to the Places of chusing Senators.\n\nThe Congress shall assemble at least once in every Year, and such Meeting shall be on the first Monday in December, unless they shall by Law appoint a different Day.\n\nSection 5: Powers and Duties of Congress\n\nEach House shall be the Judge of the Elections, Returns and Qualifications of its own Members, and a Majority of each shall constitute a Quorum to do Business; but a smaller Number may adjourn from day to day, and may be authorized to compel the Attendance of absent Members, in such Manner, and under such Penalties as each House may provide.\n\nEach House may determine the Rules of its Proceedings, punish its Members for disorderly Behaviour, and, with the Concurrence of two thirds, expel a Member.\n\nEach House shall keep a Journal of its Proceedings, and from time to time publish the same, excepting such Parts as may in their Judgment require Secrecy; and the Yeas and Nays of the Members of either House on any question shall, at the Desire of one fifth of those Present, be entered on the Journal.\n\nNeither House, during the Session of Congress, shall, without the Consent of the other, adjourn for more than three days, nor to any other Place than that in which the two Houses shall be sitting.\n\nSection 6: Rights and Disabilities of Members\n\nThe Senators and Representatives shall receive a Compensation for their Services, to be ascertained by Law, and paid out of the Treasury of the United States. They shall in all Cases, except Treason, Felony and Breach of the Peace, be privileged from Arrest during their Attendance at the Session of their respective Houses, and in going to and returning from the same; and for any Speech or Debate in either House, they shall not be questioned in any other Place.\n\nNo Senator or Representative shall, during the Time for which he was elected, be appointed to any civil Office under the Authority of the United States, which shall have been created, or the Emoluments whereof shall have been encreased during such time; and no Person holding any Office under the United States, shall be a Member of either House during his Continuance in Office.\n\nSection 7: Legislative Process\n\nAll Bills for raising Revenue shall originate in the House of Representatives; but the Senate may propose or concur with Amendments as on other Bills.\n\nEvery Bill which shall have passed the House of Representatives and the Senate, shall, before it become a Law, be presented to the President of the United States; If he approve he shall sign it, but if not he shall return it, with his Objections to that House in which it shall have originated, who shall enter the Objections at large on their Journal, and proceed to reconsider it. If after such Reconsideration two thirds of that House shall agree to pass the Bill, it shall be sent, together with the Objections, to the other House, by which it shall likewise be reconsidered, and if approved by two thirds of that House, it shall become a Law. But in all such Cases the Votes of both Houses shall be determined by yeas and Nays, and the Names of the Persons voting for and against the Bill shall be entered on the Journal of each House respectively. If any Bill shall not be returned by the President within ten Days (Sundays excepted) after it shall have been presented to him, the Same shall be a Law, in like Manner as if he had signed it, unless the Congress by their Adjournment prevent its Return, in which Case it shall not be a Law.\n\nEvery Order, Resolution, or Vote to which the Concurrence of the Senate and House of Representatives may be necessary (except on a question of Adjournment) shall be presented to the President of the United States; and before the Same shall take Effect, shall be approved by him, or being disapproved by him, shall be repassed by two thirds of the Senate and House of Representatives, according to the Rules and Limitations prescribed in the Case of a Bill.\n\nSection 8: Powers of Congress\n\nThe Congress shall have Power To lay and collect Taxes, Duties, Imposts and Excises, to pay the Debts and provide for the common Defence and general Welfare of the United States; but all Duties, Imposts and Excises shall be uniform throughout the United States;\n\nTo borrow Money on the credit of the United States;\n\nTo regulate Commerce with foreign Nations, and among the several States, and with the Indian Tribes;\n\nTo establish a uniform Rule of Naturalization, and uniform Laws on the subject of Bankruptcies throughout the United States;\n\nTo coin Money, regulate the Value thereof, and of foreign Coin, and fix the Standard of Weights and Measures;\n\nTo provide for the Punishment of counterfeiting the Securities and current Coin of the United States;\n\nTo establish Post Offices and post Roads;\n\nTo promote the Progress of Science and useful Arts, by securing for limited Times to Authors and Inventors the exclusive Right to their respective Writings and Discoveries;\n\nTo constitute Tribunals inferior to the supreme Court;\n\nTo define and punish Piracies and Felonies committed on the high Seas, and Offences against the Law of Nations;\n\nTo declare War, grant Letters of Marque and Reprisal, and make Rules concerning Captures on Land and Water;\n\nTo raise and support Armies, but no Appropriation of Money to that Use shall be for a longer Term than two Years;\n\nTo provide and maintain a Navy;\n\nTo make Rules for the Government and Regulation of the land and naval Forces;\n\nTo provide for calling forth the Militia to execute the Laws of the Union, suppress Insurrections and repel Invasions;\n\nTo provide for organizing, arming, and disciplining, the Militia, and for governing such Part of them as may be employed in the Service of the United States, reserving to the States respectively, the Appointment of the Officers, and the Authority of training the Militia according to the discipline prescribed by Congress;\n\nTo exercise exclusive Legislation in all Cases whatsoever, over such District (not exceeding ten Miles square) as may, by Cession of particular States, and the Acceptance of Congress, become the Seat of the Government of the United States, and to exercise like Authority over all Places purchased by the Consent of the Legislature of the State in which the Same shall be, for the Erection of Forts, Magazines, Arsenals, dock-Yards and other needful Buildings; And\n\nTo make all Laws which shall be necessary and proper for carrying into Execution the foregoing Powers, and all other Powers vested by this Constitution in the Government of the United States, or in any Department or Officer thereof.\n\nSection 9: Powers Denied Congress\n\nThe Migration or Importation of such Persons as any of the States now existing shall think proper to admit, shall not be prohibited by the Congress prior to the Year one thousand eight hundred and eight, but a Tax or duty may be imposed on such Importation, not exceeding ten dollars for each Person.\n\nThe Privilege of the Writ of Habeas Corpus shall not be suspended, unless when in Cases of Rebellion or Invasion the public Safety may require it.\n\nNo Bill of Attainder or ex post facto Law shall be passed.\n\nNo Capitation, or other direct, Tax shall be laid, unless in Proportion to the Census or enumeration herein before directed to be taken.\n\nNo Tax or Duty shall be laid on Articles exported from any State.\n\nNo Preference shall be given by any Regulation of Commerce or Revenue to the Ports of one State over those of another: nor shall Vessels bound to, or from, one State, be obliged to enter, clear, or pay Duties in another.\n\nNo Money shall be drawn from the Treasury, but in Consequence of Appropriations made by Law; and a regular Statement and Account of the Receipts and Expenditures of all public Money shall be published from time to time.\n\nNo Title of Nobility shall be granted by the United States: And no Person holding any Office of Profit or Trust under them, shall, without the Consent of the Congress, accept of any present, Emolument, Office, or Title, of any kind whatever, from any King, Prince, or foreign State.\n\nSection 10: Powers Denied to the States\n\nNo State shall enter into any Treaty, Alliance, or Confederation; grant Letters of Marque and Reprisal; coin Money; emit Bills of Credit; make any Thing but gold and silver Coin a Tender in Payment of Debts; pass any Bill of Attainder, ex post facto Law, or Law impairing the Obligation of Contracts, or grant any Title of Nobility.\n\nNo State shall, without the Consent of the Congress, lay any Imposts or Duties on Imports or Exports, except what may be absolutely necessary for executing it's inspection Laws: and the net Produce of all Duties and Imposts, laid by any State on Imports or Exports, shall be for the Use of the Treasury of the United States; and all such Laws shall be subject to the Revision and Controul of the Congress.\n\nNo State shall, without the Consent of Congress, lay any Duty of Tonnage, keep Troops, or Ships of War in time of Peace, enter into any Agreement or Compact with another State, or with a foreign Power, or engage in War, unless actually invaded, or in such imminent Danger as will not admit of delay.\n\nArticle II\n\nSection 1\n\nThe executive Power shall be vested in a President of the United States of America.\n\nHe shall hold his Office during the Term of four Years, and, together with the Vice President, chosen for the same Term, be elected, as follows:\n\nEach State shall appoint, in such Manner as the Legislature thereof may direct, a Number of Electors, equal to the whole Number of Senators and Representatives to which the State may be entitled in the Congress: but no Senator or Representative, or Person holding an Office of Trust or Profit under the United States, shall be appointed an Elector.\n\nThe Electors shall meet in their respective States, and vote by Ballot for two Persons, of whom one at least shall not be an Inhabitant of the same State with themselves. And they shall make a List of all the Persons voted for, and of the Number of Votes for each; which List they shall sign and certify, and transmit sealed to the Seat of the Government of the United States, directed to the President of the Senate. The President of the Senate shall, in the Presence of the Senate and House of Representatives, open all the Certificates, and the Votes shall then be counted. The Person having the greatest Number of Votes shall be the President, if such Number be a Majority of the whole Number of Electors appointed; and if there be more than one who have such Majority, and have an equal Number of Votes, then the House of Representatives shall immediately chuse by Ballot one of them for President; and if no Person have a Majority, then from the five highest on the List the said House shall in like Manner chuse the President. But in chusing the President, the Votes shall be taken by States, the Representation from each State having one Vote; A quorum for this Purpose shall consist of a Member or Members from two thirds of the States, and a Majority of all the States shall be necessary to a Choice. In every Case, after the Choice of the President, the Person having the greatest Number of Votes of the Electors shall be the Vice President. But if there should remain two or more who have equal Votes, the Senate shall chuse from them by Ballot the Vice President.\n\nThe Congress may determine the Time of chusing the Electors, and the Day on which they shall give their Votes; which Day shall be the same throughout the United States.\n\nNo Person except a natural born Citizen, or a Citizen of the United States, at the time of the Adoption of this Constitution, shall be eligible to the Office of President; neither shall any Person be eligible to that Office who shall not have attained to the Age of thirty five Years, and been fourteen Years a Resident within the United States.\n\nIn Case of the Removal of the President from Office, or of his Death, Resignation, or Inability to discharge the Powers and Duties of the said Office, the Same shall devolve on the Vice President, and the Congress may by Law provide for the Case of Removal, Death, Resignation or Inability, both of the President and Vice President, declaring what Officer shall then act as President, and such Officer shall act accordingly, until the Disability be removed, or a President shall be elected.\n\nThe President shall, at stated Times, receive for his Services, a Compensation, which shall neither be encreased nor diminished during the Period for which he shall have been elected, and he shall not receive within that Period any other Emolument from the United States, or any of them.\n\nBefore he enter on the Execution of his Office, he shall take the following Oath or Affirmation: \"I do solemnly swear (or affirm) that I will faithfully execute the Office of President of the United States, and will to the best of my Ability, preserve, protect and defend the Constitution of the United States.\"\n\nSection 2\n\nThe President shall be Commander in Chief of the Army and Navy of the United States, and of the Militia of the several States, when called into the actual Service of the United States; he may require the Opinion, in writing, of the principal Officer in each of the executive Departments, upon any Subject relating to the Duties of their respective Offices, and he shall have Power to grant Reprieves and Pardons for Offences against the United States, except in Cases of Impeachment.\n\nHe shall have Power, by and with the Advice and Consent of the Senate, to make Treaties, provided two thirds of the Senators present concur; and he shall nominate, and by and with the Advice and Consent of the Senate, shall appoint Ambassadors, other public Ministers and Consuls, Judges of the supreme Court, and all other Officers of the United States, whose Appointments are not herein otherwise provided for, and which shall be established by Law: but the Congress may by Law vest the Appointment of such inferior Officers, as they think proper, in the President alone, in the Courts of Law, or in the Heads of Departments.\n\nThe President shall have Power to fill up all Vacancies that may happen during the Recess of the Senate, by granting Commissions which shall expire at the End of their next Session.\n\nSection 3\n\nHe shall from time to time give to the Congress Information of the State of the Union, and recommend to their Consideration such Measures as he shall judge necessary and expedient; he may, on extraordinary Occasions, convene both Houses, or either of them, and in Case of Disagreement between them, with Respect to the Time of Adjournment, he may adjourn them to such Time as he shall think proper; he shall receive Ambassadors and other public Ministers; he shall take Care that the Laws be faithfully executed, and shall Commission all the Officers of the United States.\n\nSection 4\n\nThe President, Vice President and all civil Officers of the United States, shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors.\n\nArticle III\n\nSection 1\n\nThe judicial Power of the United States, shall be vested in one supreme Court, and in such inferior Courts as the Congress may from time to time ordain and establish. The Judges, both of the supreme and inferior Courts, shall hold their Offices during good Behaviour, and shall, at stated Times, receive for their Services, a Compensation, which shall not be diminished during their Continuance in Office.\n\nSection 2\n\nThe judicial Power shall extend to all Cases, in Law and Equity, arising under this Constitution, the Laws of the United States, and Treaties made, or which shall be made, under their Authority; to all Cases affecting Ambassadors, other public Ministers and Consuls; to all Cases of admiralty and maritime Jurisdiction; to Controversies to which the United States shall be a Party; to Controversies between two or more States; between a State and Citizens of another State; between Citizens of different States; between Citizens of the same State claiming Lands under Grants of different States, and between a State, or the Citizens thereof, and foreign States, Citizens or Subjects.\n\nIn all Cases affecting Ambassadors, other public Ministers and Consuls, and those in which a State shall be Party, the supreme Court shall have original Jurisdiction. In all the other Cases before mentioned, the supreme Court shall have appellate Jurisdiction, both as to Law and Fact, with such Exceptions, and under such Regulations as the Congress shall make.\n\nThe Trial of all Crimes, except in Cases of Impeachment; shall be by Jury; and such Trial shall be held in the State where the said Crimes shall have been committed; but when not committed within any State, the Trial shall be at such Place or Places as the Congress may by Law have directed.\n\nSection 3\n\nTreason against the United States, shall consist only in levying War against them, or in adhering to their Enemies, giving them Aid and Comfort. No Person shall be convicted of Treason unless on the Testimony of two Witnesses to the same overt Act, or on Confession in open Court.\n\nThe Congress shall have Power to declare the Punishment of Treason, but no Attainder of Treason shall work Corruption of Blood, or Forfeiture except during the Life of the Person attainted.\n\nArticle IV\n\nSection 1\n\nFull Faith and Credit shall be given in each State to the public Acts, Records, and judicial Proceedings of every other State. And the Congress may by general Laws prescribe the Manner in which such Acts, Records and Proceedings shall be proved, and the Effect thereof.\n\nSection 2\n\nThe Citizens of each State shall be entitled to all Privileges and Immunities of Citizens in the several States.\n\nA Person charged in any State with Treason, Felony, or other Crime, who shall flee from Justice, and be found in another State, shall on Demand of the executive Authority of the State from which he fled, be delivered up, to be removed to the State having Jurisdiction of the Crime.\n\nNo Person held to Service or Labour in one State, under the Laws thereof, escaping into another, shall, in Consequence of any Law or Regulation therein, be discharged from such Service or Labour, but shall be delivered up on Claim of the Party to whom such Service or Labour may be due.\n\nSection 3\n\nNew States may be admitted by the Congress into this Union; but no new State shall be formed or erected within the Jurisdiction of any other State; nor any State be formed by the Junction of two or more States, or Parts of States, without the Consent of the Legislatures of the States concerned as well as of the Congress.\n\nThe Congress shall have Power to dispose of and make all needful Rules and Regulations respecting the Territory or other Property belonging to the United States; and nothing in this Constitution shall be so construed as to Prejudice any Claims of the United States, or of any particular State.\n\nSection 4\n\nThe United States shall guarantee to every State in this Union a Republican Form of Government, and shall protect each of them against Invasion; and on Application of the Legislature, or of the Executive (when the Legislature cannot be convened) against domestic Violence.\n\nArticle V\n\nThe Congress, whenever two thirds of both Houses shall deem it necessary, shall propose Amendments to this Constitution, or, on the Application of the Legislatures of two thirds of the several States, shall call a Convention for proposing Amendments, which, in either Case, shall be valid to all Intents and Purposes, as Part of this Constitution, when ratified by the Legislatures of three fourths of the several States, or by Conventions in three fourths thereof, as the one or the other Mode of Ratification may be proposed by the Congress; Provided that no Amendment which may be made prior to the Year One thousand eight hundred and eight shall in any Manner affect the first and fourth Clauses in the Ninth Section of the first Article; and that no State, without its Consent, shall be deprived of its equal Suffrage in the Senate.\n\nArticle VI\n\nAll Debts contracted and Engagements entered into, before the Adoption of this Constitution, shall be as valid against the United States under this Constitution, as under the Confederation.\n\nThis Constitution, and the Laws of the United States which shall be made in Pursuance thereof; and all Treaties made, or which shall be made, under the Authority of the United States, shall be the supreme Law of the Land; and the Judges in every State shall be bound thereby, any Thing in the Constitution or Laws of any State to the Contrary notwithstanding.\n\nThe Senators and Representatives before mentioned, and the Members of the several State Legislatures, and all executive and judicial Officers, both of the United States and of the several States, shall be bound by Oath or Affirmation, to support this Constitution; but no religious Test shall ever be required as a Qualification to any Office or public Trust under the United States.\n\nArticle VII\n\nThe Ratification of the Conventions of nine States, shall be sufficient for the Establishment of this Constitution between the States so ratifying the Same.\n",
+    lear: "Enter Kent, Gloucester, and Edmond.\n\nKent. I thought the King had more affected the\nDuke of Albany, then Cornwall\n\nGlou. It did alwayes seeme so to vs: But\nnow in the diuision of the Kingdome, it appeares\nnot which of the Dukes hee valewes\nmost, for qualities are so weigh'd, that curiosity in neither,\ncan make choise of eithers moity\n\nKent. Is not this your Son, my Lord?\nGlou. His breeding Sir, hath bin at my charge. I haue\nso often blush'd to acknowledge him, that now I am\nbraz'd too't\n\nKent. I cannot conceiue you\n\nGlou. Sir, this yong Fellowes mother could; wherevpon\nshe grew round womb'd, and had indeede (Sir) a\nSonne for her Cradle, ere she had a husband for her bed.\nDo you smell a fault?\nKent. I cannot wish the fault vndone, the issue of it,\nbeing so proper\n\nGlou. But I haue a Sonne, Sir, by order of Law, some\nyeere elder then this; who, yet is no deerer in my account,\nthough this Knaue came somthing sawcily to the\nworld before he was sent for: yet was his Mother fayre,\nthere was good sport at his making, and the horson must\nbe acknowledged. Doe you know this Noble Gentleman,\nEdmond?\nEdm. No, my Lord\n\nGlou. My Lord of Kent:\nRemember him heereafter, as my Honourable Friend\n\nEdm. My seruices to your Lordship\n\nKent. I must loue you, and sue to know you better\n\nEdm. Sir, I shall study deseruing\n\nGlou. He hath bin out nine yeares, and away he shall\nagaine. The King is comming.\n\nSennet. Enter King Lear, Cornwall, Albany, Gonerill, Regan,\nCordelia, and attendants.\n\nLear. Attend the Lords of France & Burgundy, Gloster\n\nGlou. I shall, my Lord.\nEnter.\n\nLear. Meane time we shal expresse our darker purpose.\nGiue me the Map there. Know, that we haue diuided\nIn three our Kingdome: and 'tis our fast intent,\nTo shake all Cares and Businesse from our Age,\nConferring them on yonger strengths, while we\nVnburthen'd crawle toward death. Our son of Cornwal,\nAnd you our no lesse louing Sonne of Albany,\nWe haue this houre a constant will to publish\nOur daughters seuerall Dowers, that future strife\nMay be preuented now. The Princes, France & Burgundy,\nGreat Riuals in our yongest daughters loue,\nLong in our Court, haue made their amorous soiourne,\nAnd heere are to be answer'd. Tell me my daughters\n(Since now we will diuest vs both of Rule,\nInterest of Territory, Cares of State)\nWhich of you shall we say doth loue vs most,\nThat we, our largest bountie may extend\nWhere Nature doth with merit challenge. Gonerill,\nOur eldest borne, speake first\n\nGon. Sir, I loue you more then word can weild y matter,\nDeerer then eye-sight, space, and libertie,\nBeyond what can be valewed, rich or rare,\nNo lesse then life, with grace, health, beauty, honor:\nAs much as Childe ere lou'd, or Father found.\nA loue that makes breath poore, and speech vnable,\nBeyond all manner of so much I loue you\n\nCor. What shall Cordelia speake? Loue, and be silent\n\nLear. Of all these bounds euen from this Line, to this,\nWith shadowie Forrests, and with Champains rich'd\nWith plenteous Riuers, and wide-skirted Meades\nWe make thee Lady. To thine and Albanies issues\nBe this perpetuall. What sayes our second Daughter?\nOur deerest Regan, wife of Cornwall?\nReg. I am made of that selfe-mettle as my Sister,\nAnd prize me at her worth. In my true heart,\nI finde she names my very deede of loue:\nOnely she comes too short, that I professe\nMy selfe an enemy to all other ioyes,\nWhich the most precious square of sense professes,\nAnd finde I am alone felicitate\nIn your deere Highnesse loue\n\nCor. Then poore Cordelia,\nAnd yet not so, since I am sure my loue's\nMore ponderous then my tongue\n\nLear. To thee, and thine hereditarie euer,\nRemaine this ample third of our faire Kingdome,\nNo lesse in space, validitie, and pleasure\nThen that conferr'd on Gonerill. Now our Ioy,\nAlthough our last and least; to whose yong loue,\nThe Vines of France, and Milke of Burgundie,\nStriue to be interest. What can you say, to draw\nA third, more opilent then your Sisters? speake\n\nCor. Nothing my Lord\n\nLear. Nothing?\nCor. Nothing\n\nLear. Nothing will come of nothing, speake againe\n\nCor. Vnhappie that I am, I cannot heaue\nMy heart into my mouth: I loue your Maiesty\nAccording to my bond, no more nor lesse\n\nLear. How, how Cordelia? Mend your speech a little,\nLeast you may marre your Fortunes\n\nCor. Good my Lord,\nYou haue begot me, bred me, lou'd me.\nI returne those duties backe as are right fit,\nObey you, Loue you, and most Honour you.\nWhy haue my Sisters Husbands, if they say\nThey loue you all? Happily when I shall wed,\nThat Lord, whose hand must take my plight, shall carry\nHalfe my loue with him, halfe my Care, and Dutie,\nSure I shall neuer marry like my Sisters\n\nLear. But goes thy heart with this?\nCor. I my good Lord\n\nLear. So young, and so vntender?\nCor. So young my Lord, and true\n\nLear. Let it be so, thy truth then be thy dowre:\nFor by the sacred radience of the Sunne,\nThe misteries of Heccat and the night:\nBy all the operation of the Orbes,\nFrom whom we do exist, and cease to be,\nHeere I disclaime all my Paternall care,\nPropinquity and property of blood,\nAnd as a stranger to my heart and me,\nHold thee from this for euer. The barbarous Scythian,\nOr he that makes his generation messes\nTo gorge his appetite, shall to my bosome\nBe as well neighbour'd, pittied, and releeu'd,\nAs thou my sometime Daughter\n\nKent. Good my Liege\n\nLear. Peace Kent,\nCome not betweene the Dragon and his wrath,\nI lou'd her most, and thought to set my rest\nOn her kind nursery. Hence and avoid my sight:\nSo be my graue my peace, as here I giue\nHer Fathers heart from her; call France, who stirres?\nCall Burgundy, Cornwall, and Albanie,\nWith my two Daughters Dowres, digest the third,\nLet pride, which she cals plainnesse, marry her:\nI doe inuest you ioyntly with my power,\nPreheminence, and all the large effects\nThat troope with Maiesty. Our selfe by Monthly course,\nWith reseruation of an hundred Knights,\nBy you to be sustain'd, shall our abode\nMake with you by due turne, onely we shall retaine\nThe name, and all th' addition to a King: the Sway,\nReuennew, Execution of the rest,\nBeloued Sonnes be yours, which to confirme,\nThis Coronet part betweene you\n\nKent. Royall Lear,\nWhom I haue euer honor'd as my King,\nLou'd as my Father, as my Master follow'd,\nAs my great Patron thought on in my praiers\n\nLe. The bow is bent & drawne, make from the shaft\n\nKent. Let it fall rather, though the forke inuade\nThe region of my heart, be Kent vnmannerly,\nWhen Lear is mad, what wouldest thou do old man?\nThink'st thou that dutie shall haue dread to speake,\nWhen power to flattery bowes?\nTo plainnesse honour's bound,\nWhen Maiesty falls to folly, reserue thy state,\nAnd in thy best consideration checke\nThis hideous rashnesse, answere my life, my iudgement:\nThy yongest Daughter do's not loue thee least,\nNor are those empty hearted, whose low sounds\nReuerbe no hollownesse\n\nLear. Kent, on thy life no more\n\nKent. My life I neuer held but as pawne\nTo wage against thine enemies, nere feare to loose it,\nThy safety being motiue\n\nLear. Out of my sight\n\nKent. See better Lear, and let me still remaine\nThe true blanke of thine eie\n\nLear. Now by Apollo,\nKent. Now by Apollo, King\nThou swear'st thy Gods in vaine\n\nLear. O Vassall! Miscreant\n\nAlb. Cor. Deare Sir forbeare\n\nKent. Kill thy Physition, and thy fee bestow\nVpon the foule disease, reuoke thy guift,\nOr whil'st I can vent clamour from my throate,\nIle tell thee thou dost euill\n\nLea. Heare me recreant, on thine allegeance heare me;\nThat thou hast sought to make vs breake our vowes,\nWhich we durst neuer yet; and with strain'd pride,\nTo come betwixt our sentences, and our power,\nWhich, nor our nature, nor our place can beare;\nOur potencie made good, take thy reward.\nFiue dayes we do allot thee for prouision,\nTo shield thee from disasters of the world,\nAnd on the sixt to turne thy hated backe\nVpon our kingdome: if on the tenth day following,\nThy banisht trunke be found in our Dominions,\nThe moment is thy death, away. By Iupiter,\nThis shall not be reuok'd,\nKent. Fare thee well King, sith thus thou wilt appeare,\nFreedome liues hence, and banishment is here;\nThe Gods to their deere shelter take thee Maid,\nThat iustly think'st, and hast most rightly said:\nAnd your large speeches, may your deeds approue,\nThat good effects may spring from words of loue:\nThus Kent, O Princes, bids you all adew,\nHee'l shape his old course, in a Country new.\nEnter.\n\nFlourish. Enter Gloster with France, and Burgundy, Attendants.\n\nCor. Heere's France and Burgundy, my Noble Lord\n\nLear. My Lord of Burgundie,\nWe first addresse toward you, who with this King\nHath riuald for our Daughter; what in the least\nWill you require in present Dower with her,\nOr cease your quest of Loue?\nBur. Most Royall Maiesty,\nI craue no more then hath your Highnesse offer'd,\nNor will you tender lesse?\nLear. Right Noble Burgundy,\nWhen she was deare to vs, we did hold her so,\nBut now her price is fallen: Sir, there she stands,\nIf ought within that little seeming substance,\nOr all of it with our displeasure piec'd,\nAnd nothing more may fitly like your Grace,\nShee's there, and she is yours\n\nBur. I know no answer\n\nLear. Will you with those infirmities she owes,\nVnfriended, new adopted to our hate,\nDow'rd with our curse, and stranger'd with our oath,\nTake her or, leaue her\n\nBur. Pardon me Royall Sir,\nElection makes not vp in such conditions\n\nLe. Then leaue her sir, for by the powre that made me,\nI tell you all her wealth. For you great King,\nI would not from your loue make such a stray,\nTo match you where I hate, therefore beseech you\nT' auert your liking a more worthier way,\nThen on a wretch whom Nature is asham'd\nAlmost t' acknowledge hers\n\nFra. This is most strange,\nThat she whom euen but now, was your obiect,\nThe argument of your praise, balme of your age,\nThe best, the deerest, should in this trice of time\nCommit a thing so monstrous, to dismantle\nSo many folds of fauour: sure her offence\nMust be of such vnnaturall degree,\nThat monsters it: Or your fore-voucht affection\nFall into taint, which to beleeue of her\nMust be a faith that reason without miracle\nShould neuer plant in me\n\nCor. I yet beseech your Maiesty.\nIf for I want that glib and oylie Art,\nTo speake and purpose not, since what I will intend,\nIle do't before I speake, that you make knowne\nIt is no vicious blot, murther, or foulenesse,\nNo vnchaste action or dishonoured step\nThat hath depriu'd me of your Grace and fauour,\nBut euen for want of that, for which I am richer,\nA still soliciting eye, and such a tongue,\nThat I am glad I haue not, though not to haue it,\nHath lost me in your liking\n\nLear. Better thou had'st\nNot beene borne, then not t'haue pleas'd me better\n\nFra. Is it but this? A tardinesse in nature,\nWhich often leaues the history vnspoke\nThat it intends to do: my Lord of Burgundy,\nWhat say you to the Lady? Loue's not loue\nWhen it is mingled with regards, that stands\nAloofe from th' intire point, will you haue her?\nShe is herselfe a Dowrie\n\nBur. Royall King,\nGiue but that portion which your selfe propos'd,\nAnd here I take Cordelia by the hand,\nDutchesse of Burgundie\n\nLear. Nothing, I haue sworne, I am firme\n\nBur. I am sorry then you haue so lost a Father,\nThat you must loose a husband\n\nCor. Peace be with Burgundie,\nSince that respect and Fortunes are his loue,\nI shall not be his wife\n\nFra. Fairest Cordelia, that art most rich being poore,\nMost choise forsaken, and most lou'd despis'd,\nThee and thy vertues here I seize vpon,\nBe it lawfull I take vp what's cast away.\nGods, Gods! 'Tis strange, that from their cold'st neglect\nMy Loue should kindle to enflam'd respect.\nThy dowrelesse Daughter King, throwne to my chance,\nIs Queene of vs, of ours, and our faire France:\nNot all the Dukes of watrish Burgundy,\nCan buy this vnpriz'd precious Maid of me.\nBid them farewell Cordelia, though vnkinde,\nThou loosest here a better where to finde\n\nLear. Thou hast her France, let her be thine, for we\nHaue no such Daughter, nor shall euer see\nThat face of hers againe, therfore be gone,\nWithout our Grace, our Loue, our Benizon:\nCome Noble Burgundie.\n\nFlourish. Exeunt.\n\nFra. Bid farwell to your Sisters\n\nCor. The Iewels of our Father, with wash'd eies\nCordelia leaues you, I know you what you are,\nAnd like a Sister am most loth to call\nYour faults as they are named. Loue well our Father:\nTo your professed bosomes I commit him,\nBut yet alas, stood I within his Grace,\nI would prefer him to a better place,\nSo farewell to you both\n\nRegn. Prescribe not vs our dutie\n\nGon. Let your study\nBe to content your Lord, who hath receiu'd you\nAt Fortunes almes, you haue obedience scanted,\nAnd well are worth the want that you haue wanted\n\nCor. Time shall vnfold what plighted cunning hides,\nWho couers faults, at last with shame derides:\nWell may you prosper\n\nFra. Come my faire Cordelia.\n\nExit France and Cor.\n\nGon. Sister, it is not little I haue to say,\nOf what most neerely appertaines to vs both,\nI thinke our Father will hence to night\n\nReg. That's most certaine, and with you: next moneth with vs\n\nGon. You see how full of changes his age is, the obseruation\nwe haue made of it hath beene little; he alwaies\nlou'd our Sister most, and with what poore iudgement he\nhath now cast her off, appeares too grossely\n\nReg. 'Tis the infirmity of his age, yet he hath euer but\nslenderly knowne himselfe\n\nGon. The best and soundest of his time hath bin but\nrash, then must we looke from his age, to receiue not alone\nthe imperfections of long ingraffed condition, but\ntherewithall the vnruly way-wardnesse, that infirme and\ncholericke yeares bring with them\n\nReg. Such vnconstant starts are we like to haue from\nhim, as this of Kents banishment\n\nGon. There is further complement of leaue-taking betweene\nFrance and him, pray you let vs sit together, if our\nFather carry authority with such disposition as he beares,\nthis last surrender of his will but offend vs\n\nReg. We shall further thinke of it\n\nGon. We must do something, and i'th' heate.\n",
+    alice: "Down the Rabbit-Hole\n\nAlice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, \"and what is the use of a book,\" thought Alice \"without pictures or conversations?\"\n\nSo she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.\n\nThere was nothing so very remarkable in that; nor did Alice think it so very much out of the way to hear the Rabbit say to itself, \"Oh dear! Oh dear! I shall be late!\" (when she thought it over afterwards, it occurred to her that she ought to have wondered at this, but at the time it all seemed quite natural); but when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet, for it flashed across her mind that she had never before seen a rabbit with either a waistcoat-pocket, or a watch to take out of it, and burning with curiosity, she ran across the field after it, and fortunately was just in time to see it pop down a large rabbit-hole under the hedge.\n\nIn another moment down went Alice after it, never once considering how in the world she was to get out again.\n\nThe rabbit-hole went straight on like a tunnel for some way, and then dipped suddenly down, so suddenly that Alice had not a moment to think about stopping herself before she found herself falling down a very deep well.\n\nEither the well was very deep, or she fell very slowly, for she had plenty of time as she went down to look about her and to wonder what was going to happen next. First, she tried to look down and make out what she was coming to, but it was too dark to see anything; then she looked at the sides of the well, and noticed that they were filled with cupboards and book-shelves; here and there she saw maps and pictures hung upon pegs. She took down a jar from one of the shelves as she passed; it was labelled \"ORANGE MARMALADE\", but to her great disappointment it was empty: she did not like to drop the jar for fear of killing somebody underneath, so managed to put it into one of the cupboards as she fell past it.\n\n\"Well!\" thought Alice to herself, \"after such a fall as this, I shall think nothing of tumbling down stairs! How brave they'll all think me at home! Why, I wouldn't say anything about it, even if I fell off the top of the house!\" (Which was very likely true.)\n\nDown, down, down. Would the fall never come to an end? \"I wonder how many miles I've fallen by this time?\" she said aloud. \"I must be getting somewhere near the centre of the earth. Let me see: that would be four thousand miles down, I think\u2014\" (for, you see, Alice had learnt several things of this sort in her lessons in the schoolroom, and though this was not a very good opportunity for showing off her knowledge, as there was no one to listen to her, still it was good practice to say it over) \"\u2014yes, that's about the right distance\u2014but then I wonder what Latitude or Longitude I've got to?\" (Alice had no idea what Latitude was, or Longitude either, but thought they were nice grand words to say.)\n\nPresently she began again. \"I wonder if I shall fall right through the earth! How funny it'll seem to come out among the people that walk with their heads downward! The Antipathies, I think\u2014\" (she was rather glad there was no one listening, this time, as it didn't sound at all the right word) \"\u2014but I shall have to ask them what the name of the country is, you know. Please, Ma'am, is this New Zealand or Australia?\" (and she tried to curtsey as she spoke\u2014fancy curtseying as you're falling through the air! Do you think you could manage it?) \"And what an ignorant little girl she'll think me for asking! No, it'll never do to ask: perhaps I shall see it written up somewhere.\"\n\nDown, down, down. There was nothing else to do, so Alice soon began talking again. \"Dinah'll miss me very much to-night, I should think!\" (Dinah was the cat.) \"I hope they'll remember her saucer of milk at tea-time. Dinah my dear! I wish you were down here with me! There are no mice in the air, I'm afraid, but you might catch a bat, and that's very like a mouse, you know. But do cats eat bats, I wonder?\" And here Alice began to get rather sleepy, and went on saying to herself, in a dreamy sort of way, \"Do cats eat bats? Do cats eat bats?\" and sometimes, \"Do bats eat cats?\" for, you see, as she couldn't answer either question, it didn't much matter which way she put it. She felt that she was dozing off, and had just begun to dream that she was walking hand in hand with Dinah, and saying to her very earnestly, \"Now, Dinah, tell me the truth: did you ever eat a bat?\" when suddenly, thump! thump! down she came upon a heap of sticks and dry leaves, and the fall was over.\n\nAlice was not a bit hurt, and she jumped up on to her feet in a moment: she looked up, but it was all dark overhead; before her was another long passage, and the White Rabbit was still in sight, hurrying down it. There was not a moment to be lost: away went Alice like the wind, and was just in time to hear it say, as it turned a corner, \"Oh my ears and whiskers, how late it's getting!\" She was close behind it when she turned the corner, but the Rabbit was no longer to be seen: she found herself in a long, low hall, which was lit up by a row of lamps hanging from the roof.\n\nThere were doors all round the hall, but they were all locked; and when Alice had been all the way down one side and up the other, trying every door, she walked sadly down the middle, wondering how she was ever to get out again.\n\nSuddenly she came upon a little three-legged table, all made of solid glass; there was nothing on it except a tiny golden key, and Alice's first thought was that it might belong to one of the doors of the hall; but, alas! either the locks were too large, or the key was too small, but at any rate it would not open any of them. However, on the second time round, she came upon a low curtain she had not noticed before, and behind it was a little door about fifteen inches high: she tried the little golden key in the lock, and to her great delight it fitted!\n\nAlice opened the door and found that it led into a small passage, not much larger than a rat-hole: she knelt down and looked along the passage into the loveliest garden you ever saw. How she longed to get out of that dark hall, and wander about among those beds of bright flowers and those cool fountains, but she could not even get her head through the doorway; \"and even if my head would go through,\" thought poor Alice, \"it would be of very little use without my shoulders. Oh, how I wish I could shut up like a telescope! I think I could, if I only knew how to begin.\" For, you see, so many out-of-the-way things had happened lately, that Alice had begun to think that very few things indeed were really impossible.\n\nThere seemed to be no use in waiting by the little door, so she went back to the table, half hoping she might find another key on it, or at any rate a book of rules for shutting people up like telescopes: this time she found a little bottle on it, (\"which certainly was not here before,\" said Alice,) and round the neck of the bottle was a paper label, with the words \"DRINK ME,\" beautifully printed on it in large letters.\n\nIt was all very well to say \"Drink me,\" but the wise little Alice was not going to do that in a hurry. \"No, I'll look first,\" she said, \"and see whether it's marked 'poison' or not\"; for she had read several nice little histories about children who had got burnt, and eaten up by wild beasts and other unpleasant things, all because they would not remember the simple rules their friends had taught them: such as, that a red-hot poker will burn you if you hold it too long; and that if you cut your finger very deeply with a knife, it usually bleeds; and she had never forgotten that, if you drink much from a bottle marked \"poison,\" it is almost certain to disagree with you, sooner or later.\n\nHowever, this bottle was not marked \"poison,\" so Alice ventured to taste it, and finding it very nice, (it had, in fact, a sort of mixed flavour of cherry-tart, custard, pine-apple, roast turkey, toffee, and hot buttered toast,) she very soon finished it off.\n\n\"What a curious feeling!\" said Alice; \"I must be shutting up like a telescope.\"\n\nAnd so it was indeed: she was now only ten inches high, and her face brightened up at the thought that she was now the right size for going through the little door into that lovely garden. First, however, she waited for a few minutes to see if she was going to shrink any further: she felt a little nervous about this; \"for it might end, you know,\" said Alice to herself, \"in my going out altogether, like a candle. I wonder what I should be like then?\" And she tried to fancy what the flame of a candle is like after the candle is blown out, for she could not remember ever having seen such a thing.\n\nAfter a while, finding that nothing more happened, she decided on going into the garden at once; but, alas for poor Alice! when she got to the door, she found she had forgotten the little golden key, and when she went back to the table for it, she found she could not possibly reach it: she could see it quite plainly through the glass, and she tried her best to climb up one of the legs of the table, but it was too slippery; and when she had tired herself out with trying, the poor little thing sat down and cried.\n\n\"Come, there's no use in crying like that!\" said Alice to herself, rather sharply; \"I advise you to leave off this minute!\" She generally gave herself very good advice, (though she very seldom followed it), and sometimes she scolded herself so severely as to bring tears into her eyes; and once she remembered trying to box her own ears for having cheated herself in a game of croquet she was playing against herself, for this curious child was very fond of pretending to be two people. \"But it's no use now,\" thought poor Alice, \"to pretend to be two people! Why, there's hardly enough of me left to make one respectable person!\"\n\nSoon her eye fell on a little glass box that was lying under the table: she opened it, and found in it a very small cake, on which the words \"EAT ME\" were beautifully marked in currants. \"Well, I'll eat it,\" said Alice, \"and if it makes me grow larger, I can reach the key; and if it makes me grow smaller, I can creep under the door; so either way I'll get into the garden, and I don't care which happens!\"\n\nShe ate a little bit, and said anxiously to herself, \"Which way? Which way?\", holding her hand on the top of her head to feel which way it was growing, and she was quite surprised to find that she remained the same size: to be sure, this generally happens when one eats cake, but Alice had got so much into the way of expecting nothing but out-of-the-way things to happen, that it seemed quite dull and stupid for life to go on in the common way.\n\nSo she set to work, and very soon finished off the cake.\n"
+  };
+
+  const sampleSelect = document.getElementById('sample-select');
+
+  const UPPER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const LOWER_ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const ALL_LETTERS = UPPER_ALPHABET.concat(LOWER_ALPHABET);
+  const TARGET_TILES_FOR_LARGEST = 30; // how many tiles the single biggest compartment should show
+  const MINIMUM_CAST_PER_LETTER = 2; // every font needs at least a few of EVERY letter --
+                                      // even a Q or a Z this sample never happens to use
+
+  // A quarto sheet isn't printed one page at a time. Four pages of
+  // type are locked up together as a single unit -- a "forme" -- and
+  // printed in one pass. Turn the sheet over, print a second forme
+  // (four more pages) on the other side, then fold it twice: one
+  // sheet of paper becomes eight pages of a book.
+  const PAGES_PER_FORME = 4;
+  const FORMES_PER_SHEET = 2;
+  const PAGES_PER_SHEET = PAGES_PER_FORME * FORMES_PER_SHEET; // = 8
+
+  // --- How much a piece of type actually weighs ---
+  // Real, physically grounded numbers:
+  //   - Type-high (the foot-to-face body height every piece shares,
+  //     the whole subject of Chapter Four) is a genuine historical
+  //     standard: 0.918 inches.
+  //   - A letter's WIDTH varies -- an i is narrow, an m is wide --
+  //     so there's no single true width. 0.7 times the point size
+  //     is a reasonable average across a normal mix of letters.
+  //   - Type metal (lead, tin, and antimony, per Chapter Two) has a
+  //     real measured density of about 9.4 grams per cubic centimeter.
+  const TYPE_HIGH_INCHES = 0.918;
+  const AVERAGE_SET_WIDTH_FACTOR = 0.7;
+  const TYPE_METAL_DENSITY_G_PER_CM3 = 9.4;
+
+  function weightPerPieceGrams(pointSize) {
+    const pointSizeInches = pointSize / 72.27; // the traditional point, not quite 1/72"
+    const avgWidthInches = AVERAGE_SET_WIDTH_FACTOR * pointSizeInches;
+    const volumeCubicInches = TYPE_HIGH_INCHES * pointSizeInches * avgWidthInches;
+    const volumeCubicCm = volumeCubicInches * 16.387;
+    return volumeCubicCm * TYPE_METAL_DENSITY_G_PER_CM3;
+  }
+
+  function formatWeight(totalGrams) {
+    const kg = totalGrams / 1000;
+    const lb = totalGrams / 453.592;
+    return `${lb.toLocaleString(undefined, { maximumFractionDigits: 1 })} lb (${kg.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg)`;
+  }
+
+  // Capitals and lowercase are counted SEPARATELY -- a printed
+  // capital E and a printed lowercase e are different pieces of
+  // type, cast separately and stored in different cases, exactly
+  // as Chapter Six describes. Case is preserved, not folded.
+  function countLetters(text) {
+    const counts = {};
+    ALL_LETTERS.forEach(l => counts[l] = 0);
+    for (const ch of text) {
+      if (counts.hasOwnProperty(ch)) counts[ch]++;
+    }
+    return counts;
+  }
+
+  // How many total pieces of type does the shop need on hand at once?
+  // NOT total characters ever printed -- type gets reused constantly.
+  // It's enough to cover every page "in flight" between being set and
+  // being distributed back into the case, plus a safety buffer for
+  // when distribution falls behind (a sick compositor, a bad week).
+  function workingInventorySize() {
+    const sheetsPerDay = Math.max(0.1, parseFloat(sheetsPerDayInput.value) || 1);
+    const charsPerPage = Math.max(1, parseFloat(charsPerPageInput.value) || 1);
+    const lagDays = Math.max(0, parseFloat(lagDaysInput.value) || 0);
+    const bufferDays = Math.max(0, parseFloat(bufferDaysInput.value) || 0);
+    const pagesPerDay = sheetsPerDay * PAGES_PER_SHEET;
+    const daysOfTypeTiedUp = lagDays + bufferDays;
+    const pagesInFlight = pagesPerDay * daysOfTypeTiedUp;
+    if (pagesPerDayReadoutEl) {
+      pagesPerDayReadoutEl.textContent = pagesPerDay.toLocaleString(undefined, { maximumFractionDigits: 1 });
+    }
+    return Math.max(1, pagesInFlight * charsPerPage);
+  }
+
+  function updateInventoryReadout() {
+    const total = workingInventorySize();
+    inventoryTotalEl.textContent = total.toLocaleString();
+    if (weightTotalEl) {
+      const pointSize = Math.max(1, parseFloat(pointSizeInput.value) || 12);
+      const totalGrams = weightPerPieceGrams(pointSize) * total;
+      weightTotalEl.textContent = formatWeight(totalGrams);
+    }
+    return total;
+  }
+
+  // Renders one case (upper or lower) into its grid element, using
+  // its OWN shared tile scale -- capitals are naturally much rarer
+  // than lowercase letters, so giving each case its own scale keeps
+  // the internal comparisons within that case meaningful, rather
+  // than shrinking capitals down to invisible specks against lowercase.
+  function renderCase(gridEl, scaleNoteEl, items) {
+    gridEl.innerHTML = '';
+    const maxRecommended = Math.max(...items.map(r => r.recommended));
+    const tileScale = Math.max(1, Math.ceil(maxRecommended / TARGET_TILES_FOR_LARGEST));
+
+    if (scaleNoteEl) {
+      scaleNoteEl.textContent = tileScale > 1
+        ? `Each square represents about ${tileScale} pieces of type.`
+        : `Each square represents one piece of type.`;
+    }
+
+    items.forEach(({ letter, count, recommended }) => {
+      const compartment = document.createElement('div');
+      compartment.className = 'compartment' + (count === 0 ? ' baseline' : '');
+
+      const relative = maxRecommended > 0 ? recommended / maxRecommended : 0;
+      const basis = 34 + relative * 260;
+      compartment.style.flexBasis = basis + 'px';
+
+      const label = document.createElement('div');
+      label.className = 'letter-label';
+      label.textContent = letter;
+      compartment.appendChild(label);
+
+      const countLabel = document.createElement('div');
+      countLabel.className = 'count-label';
+      countLabel.textContent = recommended.toLocaleString();
+      compartment.appendChild(countLabel);
+
+      if (count === 0) {
+        const minTag = document.createElement('div');
+        minTag.className = 'min-tag';
+        minTag.textContent = 'minimum';
+        compartment.appendChild(minTag);
+      }
+
+      const tiles = document.createElement('div');
+      tiles.className = 'tiles';
+      const tileCount = Math.max(1, Math.round(recommended / tileScale));
+      for (let i = 0; i < tileCount; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'sort-tile';
+        tiles.appendChild(tile);
+      }
+      compartment.appendChild(tiles);
+
+      gridEl.appendChild(compartment);
+    });
+  }
+
+  // Renders one case's ledger table (upper or lower).
+  function renderBillTable(bodyEl, items, total) {
+    bodyEl.innerHTML = '';
+    items.forEach(({ letter, count, recommended }) => {
+      const share = count / total;
+      const row = document.createElement('tr');
+      if (count === 0) row.className = 'baseline-row';
+      row.innerHTML = `
+        <td>${letter}</td>
+        <td class="num">${count}</td>
+        <td>
+          <div class="bar-cell">
+            <div class="bar-track"><div class="bar-fill" style="width:${(share * 100).toFixed(1)}%"></div></div>
+            <span>${count === 0 ? 'not used' : (share * 100).toFixed(1) + '%'}</span>
+          </div>
+        </td>
+        <td class="num">${recommended}${count === 0 ? ' <span class="min-flag">(min)</span>' : ''}</td>
+      `;
+      bodyEl.appendChild(row);
+    });
+
+    const totalRow = document.createElement('tr');
+    totalRow.className = 'total-row';
+    const caseTotal = items.reduce((sum, { recommended }) => sum + recommended, 0);
+    const caseCount = items.reduce((sum, { count }) => sum + count, 0);
+    totalRow.innerHTML = `
+      <td>Case total</td>
+      <td class="num">${caseCount}</td>
+      <td></td>
+      <td class="num">${caseTotal}</td>
+    `;
+    bodyEl.appendChild(totalRow);
+  }
+
+  function buildBill() {
+    const text = textInput.value;
+    const fontSize = updateInventoryReadout();
+    const counts = countLetters(text);
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+    if (total === 0) {
+      caseSection.style.display = 'none';
+      billSection.style.display = 'block';
+      billBodyUpper.innerHTML = '<tr><td colspan="4" class="empty-state">No letters found — try a longer passage.</td></tr>';
+      billBodyLower.innerHTML = '';
+      return;
+    }
+
+    // Every letter's recommended cast quantity, computed against the
+    // SAME shared total -- 52 categories (26 capitals + 26 lowercase)
+    // instead of 26, since a capital E and a lowercase e are
+    // different pieces of type. A minimum is applied to every one of
+    // the 52, whether this sample used it or not.
+    function withRecommended(letters) {
+      return letters
+        .map(letter => ({ letter, count: counts[letter] }))
+        .sort((a, b) => b.count - a.count)
+        .map(({ letter, count }) => {
+          const share = count / total;
+          let recommended = Math.round(share * fontSize);
+          if (recommended < MINIMUM_CAST_PER_LETTER) recommended = MINIMUM_CAST_PER_LETTER;
+          return { letter, count, recommended };
+        });
+    }
+
+    const upperItems = withRecommended(UPPER_ALPHABET);
+    const lowerItems = withRecommended(LOWER_ALPHABET);
+
+    renderCase(caseGridUpper, document.getElementById('scale-note-upper'), upperItems);
+    renderCase(caseGridLower, document.getElementById('scale-note-lower'), lowerItems);
+    renderBillTable(billBodyUpper, upperItems, total);
+    renderBillTable(billBodyLower, lowerItems, total);
+
+    caseSection.style.display = 'block';
+    billSection.style.display = 'block';
+  }
+
+  castBtn.addEventListener('click', buildBill);
+
+  // Loading a preset sample fills the textarea and immediately re-casts
+  // the bill, so the reader sees the effect of a longer, real text
+  // right away rather than having to also remember to press the button.
+  sampleSelect.addEventListener('change', () => {
+    const key = sampleSelect.value;
+    if (key && SAMPLE_TEXTS[key]) {
+      textInput.value = SAMPLE_TEXTS[key];
+      buildBill();
+    }
+    sampleSelect.value = '';
+  });
+
+  // Keep the inventory readout live as shop settings change, even
+  // before the reader presses "Cast the Bill."
+  [sheetsPerDayInput, charsPerPageInput, lagDaysInput, bufferDaysInput, pointSizeInput].forEach(input => {
+    input.addEventListener('input', updateInventoryReadout);
+  });
+
+  // Cast the default sample on load so the page never looks empty.
+  buildBill();
+})();
+</script>
+</body>
+</html>
