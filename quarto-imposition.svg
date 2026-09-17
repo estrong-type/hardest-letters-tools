@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" font-family="Georgia, 'Times New Roman', serif">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1000" height="620" fill="#F2E9D2"/>
+
+  <!-- Title -->
+  <text x="500" y="42" text-anchor="middle" font-size="26" font-weight="bold" fill="#221D16">How a Quarto Sheet Is Imposed</text>
+  <text x="500" y="66" text-anchor="middle" font-size="15" font-style="italic" fill="#4A3F31">One sheet of paper, printed on both sides, folded twice</text>
+
+  <!-- ============ FORME A (left) ============ -->
+  <text x="230" y="105" text-anchor="middle" font-size="18" font-weight="bold" fill="#221D16">Forme A — First side printed</text>
+
+  <!-- Outer box -->
+  <rect x="60" y="120" width="340" height="340" fill="#EDE0C4" stroke="#221D16" stroke-width="2.5"/>
+
+  <!-- Fold lines (dashed) -->
+  <line x1="230" y1="120" x2="230" y2="460" stroke="#7A2E2E" stroke-width="2" stroke-dasharray="8,6"/>
+  <line x1="60" y1="290" x2="400" y2="290" stroke="#7A2E2E" stroke-width="2" stroke-dasharray="8,6"/>
+
+  <!-- Quadrant dividers (subtle, matches grid) -->
+  <!-- Top-left: Page 8, upright -->
+  <text x="145" y="215" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">8</text>
+  <text x="145" y="245" text-anchor="middle" font-size="13" fill="#4A3F31">upright</text>
+
+  <!-- Top-right: Page 1, upright -->
+  <text x="315" y="215" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">1</text>
+  <text x="315" y="245" text-anchor="middle" font-size="13" fill="#4A3F31">upright</text>
+
+  <!-- Bottom-left: Page 4, upside down -->
+  <g transform="rotate(180, 145, 375)">
+    <text x="145" y="375" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">4</text>
+  </g>
+  <text x="145" y="430" text-anchor="middle" font-size="13" fill="#4A3F31">upside-down</text>
+
+  <!-- Bottom-right: Page 5, upside down -->
+  <g transform="rotate(180, 315, 375)">
+    <text x="315" y="375" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">5</text>
+  </g>
+  <text x="315" y="430" text-anchor="middle" font-size="13" fill="#4A3F31">upside-down</text>
+
+  <!-- ============ FORME B (right) ============ -->
+  <text x="770" y="105" text-anchor="middle" font-size="18" font-weight="bold" fill="#221D16">Forme B — Second side printed</text>
+
+  <rect x="600" y="120" width="340" height="340" fill="#EDE0C4" stroke="#221D16" stroke-width="2.5"/>
+
+  <line x1="770" y1="120" x2="770" y2="460" stroke="#7A2E2E" stroke-width="2" stroke-dasharray="8,6"/>
+  <line x1="600" y1="290" x2="940" y2="290" stroke="#7A2E2E" stroke-width="2" stroke-dasharray="8,6"/>
+
+  <!-- Top-left: Page 2, upright -->
+  <text x="685" y="215" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">2</text>
+  <text x="685" y="245" text-anchor="middle" font-size="13" fill="#4A3F31">upright</text>
+
+  <!-- Top-right: Page 7, upright -->
+  <text x="855" y="215" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">7</text>
+  <text x="855" y="245" text-anchor="middle" font-size="13" fill="#4A3F31">upright</text>
+
+  <!-- Bottom-left: Page 3, upside down -->
+  <g transform="rotate(180, 685, 375)">
+    <text x="685" y="375" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">3</text>
+  </g>
+  <text x="685" y="430" text-anchor="middle" font-size="13" fill="#4A3F31">upside-down</text>
+
+  <!-- Bottom-right: Page 6, upside down -->
+  <g transform="rotate(180, 855, 375)">
+    <text x="855" y="375" text-anchor="middle" font-size="46" font-weight="bold" fill="#221D16">6</text>
+  </g>
+  <text x="855" y="430" text-anchor="middle" font-size="13" fill="#4A3F31">upside-down</text>
+
+  <!-- "Same sheet, other side" connector -->
+  <text x="500" y="295" text-anchor="middle" font-size="14" font-style="italic" fill="#4A3F31">same</text>
+  <text x="500" y="312" text-anchor="middle" font-size="14" font-style="italic" fill="#4A3F31">sheet,</text>
+  <text x="500" y="329" text-anchor="middle" font-size="14" font-style="italic" fill="#4A3F31">other</text>
+  <text x="500" y="346" text-anchor="middle" font-size="14" font-style="italic" fill="#4A3F31">side</text>
+  <path d="M 410 290 L 460 290" stroke="#6B4423" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 590 290 L 540 290" stroke="#6B4423" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#6B4423"/>
+    </marker>
+  </defs>
+
+  <!-- Fold line labels -->
+  <text x="230" y="480" text-anchor="middle" font-size="12" fill="#7A2E2E">fold line (vertical)</text>
+  <text x="770" y="480" text-anchor="middle" font-size="12" fill="#7A2E2E">fold line (vertical)</text>
+  <text x="415" y="285" font-size="12" fill="#7A2E2E" transform="rotate(-90, 415, 285)"></text>
+
+  <!-- Bottom summary strip -->
+  <rect x="60" y="520" width="880" height="70" fill="#DDCBA0" stroke="#B08D57" stroke-width="1.5"/>
+  <text x="500" y="548" text-anchor="middle" font-size="14" fill="#221D16">Fold along both dashed lines, trim the folded edges, and the pages fall into order:</text>
+  <text x="500" y="574" text-anchor="middle" font-size="20" font-weight="bold" fill="#7A2E2E" letter-spacing="4">1 — 2 — 3 — 4 — 5 — 6 — 7 — 8</text>
+
+</svg>
