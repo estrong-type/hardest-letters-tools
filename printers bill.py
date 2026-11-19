@@ -6,10 +6,10 @@ Companion to "The Hardest Letters: What It Really Took to Print a Page"
 (Edward C. Strong, DotLit Press). Mirrors the web calculator printers-bill.html.
 
 Usage:
-    python3 printers_bill.py                      # default sample, default shop
-    python3 printers_bill.py --sample alice       # constitution | lear | alice
-    python3 printers_bill.py --file mytext.txt
-    python3 printers_bill.py --compositor Ana=5 --compositor Ben=4 \
+    python3 "printers bill.py"                      # default sample, default shop
+    python3 "printers bill.py" --sample alice       # constitution | lear | alice
+    python3 "printers bill.py" --file mytext.txt
+    python3 "printers bill.py" --compositor Ana=5 --compositor Ben=4 \
                              --distributor Cy=6 --lag 1 --buffer 2 --point 10
 
 Model (same as the web tool):
