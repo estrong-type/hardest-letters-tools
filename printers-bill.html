@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Printer's Bill</title>
+<title>The Bill of Type</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -393,6 +393,20 @@
     letter-spacing: 0.03em;
   }
 
+
+  .people-setting { grid-column: span 2; }
+  .people-list { display: flex; flex-direction: column; gap: 6px; margin: 6px 0; }
+  .person-row { display: flex; gap: 8px; align-items: center; }
+  .person-row input[type="text"] { flex: 1 1 auto; min-width: 0; }
+  .person-row input[type="number"] { width: 80px; flex: 0 0 auto; }
+  .person-row .rm-btn, .add-btn {
+    font: inherit; font-size: 13px; cursor: pointer; background: transparent;
+    border: 1px solid var(--ink-soft, #888); color: inherit; border-radius: 4px; padding: 4px 10px;
+  }
+  .person-row .rm-btn { padding: 4px 8px; }
+  .person-row .rm-btn:focus-visible, .add-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  .shortfall { color: #a33; }
+
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
   }
@@ -409,7 +423,7 @@
 
   <header>
     <div class="eyebrow">Venice, 1490 — or your own desk, today</div>
-    <h1>The Printer's Bill</h1>
+    <h1>The Bill of Type</h1>
     <p class="subtitle">Decide how many of each letter a font would need to set your text</p>
   </header>
 
@@ -427,12 +441,15 @@
     <textarea id="text-input">Marietta had been sorting type since before dawn, and her fingers already knew what her eyes were too tired to check.</textarea>
 
     <div class="shop-settings">
-      <div class="setting">
-        <label for="sheets-per-day">
-          Sheets set &amp; printed per day
-          <span class="hint">a quarto sheet = 4 pages/forme &times; 2 formes/sheet = 8 pages</span>
-        </label>
-        <input type="number" id="sheets-per-day" value="1" min="0.1" max="50" step="0.1">
+      <div class="setting people-setting">
+        <label>Compositors <span class="hint">who sets type &mdash; pages per day each</span></label>
+        <div class="people-list" id="compositor-list"></div>
+        <button type="button" class="add-btn" id="add-compositor">+ Add a compositor</button>
+      </div>
+      <div class="setting people-setting">
+        <label>Distributors <span class="hint">who sorts used type back into the case &mdash; pages per day each</span></label>
+        <div class="people-list" id="distributor-list"></div>
+        <button type="button" class="add-btn" id="add-distributor">+ Add a distributor</button>
       </div>
       <div class="setting">
         <label for="chars-per-page">Characters per page</label>
@@ -459,9 +476,11 @@
     </div>
 
     <div class="inventory-readout" id="inventory-readout">
-      <div><span id="pages-per-day-readout">—</span> pages of type composed per day</div>
-      Working inventory needed: <strong id="inventory-total">—</strong> pieces of type
-      <div>That's roughly <strong id="weight-total">—</strong> of lead-tin-antimony type metal</div>
+      <div><span id="pages-per-day-readout">&mdash;</span> pages of type composed per day (<span id="sheets-per-day-readout">&mdash;</span> sheets/day)</div>
+      <div>At 260 working days, that is <span id="year-readout">&mdash;</span></div>
+      <div id="surplus-readout"></div>
+      Working inventory needed: <strong id="inventory-total">&mdash;</strong> pieces of type
+      <div>That's roughly <strong id="weight-total">&mdash;</strong> of lead-tin-antimony type metal</div>
     </div>
 
     <div class="controls">
@@ -519,7 +538,6 @@
 <script>
 (function () {
   const textInput = document.getElementById('text-input');
-  const sheetsPerDayInput = document.getElementById('sheets-per-day');
   const charsPerPageInput = document.getElementById('chars-per-page');
   const lagDaysInput = document.getElementById('lag-days');
   const bufferDaysInput = document.getElementById('buffer-days');
@@ -605,16 +623,65 @@
   // It's enough to cover every page "in flight" between being set and
   // being distributed back into the case, plus a safety buffer for
   // when distribution falls behind (a sick compositor, a bad week).
+  const WORKING_DAYS_PER_YEAR = 260;
+
+  const DEFAULT_COMPOSITORS = [['Typesetter 1', 4.5], ['Typesetter 2', 4.5], ['Marietta', 4]];
+  const DEFAULT_DISTRIBUTORS = [['Distributor 1', 5], ['Distributor 2', 5], ['Isabetta', 5]];
+  const compositorList = document.getElementById('compositor-list');
+  const distributorList = document.getElementById('distributor-list');
+
+  function addPerson(listEl, name, rate) {
+    const row = document.createElement('div');
+    row.className = 'person-row';
+    const n = document.createElement('input');
+    n.type = 'text'; n.value = name; n.setAttribute('aria-label', 'Name');
+    const r = document.createElement('input');
+    r.type = 'number'; r.value = rate; r.min = 0; r.max = 50; r.step = 0.5;
+    r.setAttribute('aria-label', 'Pages per day');
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'rm-btn'; rm.textContent = '\u00D7';
+    rm.setAttribute('aria-label', 'Remove');
+    rm.addEventListener('click', () => { row.remove(); updateInventoryReadout(); });
+    r.addEventListener('input', updateInventoryReadout);
+    row.append(n, r, rm);
+    listEl.appendChild(row);
+  }
+  function sumRates(listEl) {
+    let t = 0;
+    listEl.querySelectorAll('input[type="number"]').forEach(i => { t += Math.max(0, parseFloat(i.value) || 0); });
+    return t;
+  }
+  function fmt(x, d) { return x.toLocaleString(undefined, { maximumFractionDigits: d === undefined ? 1 : d }); }
+
+  // How many total pieces of type does the shop need on hand at once?
+  // NOT total characters ever printed -- type gets reused constantly.
+  // It's enough to cover every page "in flight" between being set and
+  // being distributed back into the case, plus a safety buffer.
+  // Pages per day = what the compositors set (a shop can't print
+  // faster than its people set type).
   function workingInventorySize() {
-    const sheetsPerDay = Math.max(0.1, parseFloat(sheetsPerDayInput.value) || 1);
     const charsPerPage = Math.max(1, parseFloat(charsPerPageInput.value) || 1);
     const lagDays = Math.max(0, parseFloat(lagDaysInput.value) || 0);
     const bufferDays = Math.max(0, parseFloat(bufferDaysInput.value) || 0);
-    const pagesPerDay = sheetsPerDay * PAGES_PER_SHEET;
-    const daysOfTypeTiedUp = lagDays + bufferDays;
-    const pagesInFlight = pagesPerDay * daysOfTypeTiedUp;
-    if (pagesPerDayReadoutEl) {
-      pagesPerDayReadoutEl.textContent = pagesPerDay.toLocaleString(undefined, { maximumFractionDigits: 1 });
+    const pagesPerDay = sumRates(compositorList);
+    const distCapacity = sumRates(distributorList);
+    const sheetsPerDay = pagesPerDay / PAGES_PER_SHEET;
+    const pagesInFlight = pagesPerDay * (lagDays + bufferDays);
+
+    pagesPerDayReadoutEl.textContent = fmt(pagesPerDay);
+    document.getElementById('sheets-per-day-readout').textContent = fmt(sheetsPerDay, 2);
+    const yearPages = pagesPerDay * WORKING_DAYS_PER_YEAR;
+    document.getElementById('year-readout').textContent =
+      `${fmt(Math.round(yearPages), 0)} pages, or ${fmt(Math.round(yearPages / PAGES_PER_SHEET), 0)} sheets, a year`;
+
+    const sEl = document.getElementById('surplus-readout');
+    const diff = distCapacity - pagesPerDay;
+    if (diff >= 0) {
+      sEl.className = '';
+      sEl.textContent = `Surplus: ${diff.toFixed(1)} pages/day of spare distribution capacity.`;
+    } else {
+      sEl.className = 'shortfall';
+      sEl.textContent = `Shortfall: distributors fall ${(-diff).toFixed(1)} pages/day behind; used type will pile up and the case will run dry.`;
     }
     return Math.max(1, pagesInFlight * charsPerPage);
   }
@@ -778,9 +845,16 @@
 
   // Keep the inventory readout live as shop settings change, even
   // before the reader presses "Cast the Bill."
-  [sheetsPerDayInput, charsPerPageInput, lagDaysInput, bufferDaysInput, pointSizeInput].forEach(input => {
+  [charsPerPageInput, lagDaysInput, bufferDaysInput, pointSizeInput].forEach(input => {
     input.addEventListener('input', updateInventoryReadout);
   });
+
+  DEFAULT_COMPOSITORS.forEach(p => addPerson(compositorList, p[0], p[1]));
+  DEFAULT_DISTRIBUTORS.forEach(p => addPerson(distributorList, p[0], p[1]));
+  document.getElementById('add-compositor').addEventListener('click', () => {
+    addPerson(compositorList, 'Compositor ' + (compositorList.children.length + 1), 4); updateInventoryReadout(); });
+  document.getElementById('add-distributor').addEventListener('click', () => {
+    addPerson(distributorList, 'Distributor ' + (distributorList.children.length + 1), 5); updateInventoryReadout(); });
 
   // Cast the default sample on load so the page never looks empty.
   buildBill();
